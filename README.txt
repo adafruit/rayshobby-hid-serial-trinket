@@ -9,19 +9,16 @@ can be adapted to other AVR microcontrollers as well.
 
 The software is written by Ray Wang at Rayshobby LLC
 and published under the Creative Commons Attribution-
-ShareAlike (CC-SA) 3.0 license. 
+ShareAlike (CC-SA) 3.0 license.
+
+Frank: Original website is at http://rayshobby.net/?p=7363 and original github is at https://github.com/rayshobby/hid-serial
+Frank: I am forking this to add support for Adafruit Industries Trinket, see http://learn.adafruit.com/trinket-fake-usb-serial/another-way-from-rays-hobby
+Frank: Some of the irrelevant folders have been removed from this fork
+Frank: usbconfig.h is completely changed to support Trinket instead
 
 ========================================================
 
 The folders are organized as follows:
-
-- 'schematic' contains the circuit schematic and part list.
-
-- 'bootloader' contains the modified USnoobie bootloader
-  The bootloader is optional, but once flashed, it allows
-  the mcu to bootload (by pressing the button during power-on
-  or reset) as a usbasp programmer, so you will not need
-  any external programer to flash a program.
 
 - 'arduino code' contains the Arduino library for HIDSerial.
   To use it:
@@ -30,9 +27,7 @@ The folders are organized as follows:
     directory, and the HIDSerial library to your arduino's 
     libraries directory.
   * Run Arduino (the recommended version is 1.0.5 or 1.0.4).
-  * Make sure you select 'USnoobie' from Tools -> Boards
-  * If you use the USnoobie bootloader, select 'USBasp' from
-    Tools -> Programmer.
+  * Make sure you select Trinket from Tools -> Boards
   * Select any provided example from File -> Examples -> HIDSerial
   * Upload
   

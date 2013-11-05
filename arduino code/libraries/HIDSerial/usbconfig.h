@@ -13,8 +13,8 @@
 /*
 General Description:
 This file is an example configuration (with inline documentation) for the USB
-driver. It configures V-USB for USB D+ connected to Port D bit 2 (which is
-also hardware interrupt 0 on many devices) and USB D- to Port D bit 4. You may
+driver. It configures V-USB for USB D+ (which is
+also hardware interrupt 0 on many devices) and USB D-. You may
 wire the lines to any other port, as long as D+ is also wired to INT0 (or any
 other hardware interrupt, as long as it is the highest level interrupt, see
 section at the end of this file).
@@ -22,23 +22,22 @@ section at the end of this file).
 
 /* ---------------------------- Hardware Config ---------------------------- */
 
+#if defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny25__)
+#define USB_CFG_IOPORTNAME      B // Trinket Specific
+#define USB_CFG_DMINUS_BIT      3 // Trinket Specific
+#define USB_CFG_DPLUS_BIT       4 // Trinket Specific
+#if (F_CPU != 16500000)
+// F_CPU must be set to 16500000 for this library, or else it won't work
+#undef F_CPU
+#define F_CPU 16500000UL
+#endif
+#else
+// original settings from Rays Hobby
 #define USB_CFG_IOPORTNAME      D
-/* This is the port where the USB bus is connected. When you configure it to
- * "B", the registers PORTB, PINB and DDRB will be used.
- */
 #define USB_CFG_DMINUS_BIT      7
-/* This is the bit number in USB_CFG_IOPORT where the USB D- line is connected.
- * This may be any bit in the port.
- */
 #define USB_CFG_DPLUS_BIT       2
-/* This is the bit number in USB_CFG_IOPORT where the USB D+ line is connected.
- * This may be any bit in the port. Please note that D+ must also be connected
- * to interrupt pin INT0! [You can also use other interrupts, see section
- * "Optional MCU Description" below, or you can connect D- to the interrupt, as
- * it is required if you use the USB_COUNT_SOF feature. If you use D- for the
- * interrupt, the USB interrupt will also be triggered at Start-Of-Frame
- * markers every millisecond.]
- */
+#endif
+
 #define USB_CFG_CLOCK_KHZ       (F_CPU/1000)
 /* Clock rate of the AVR in kHz. Legal values are 12000, 12800, 15000, 16000,
  * 16500, 18000 and 20000. The 12.8 MHz and 16.5 MHz versions of the code
@@ -200,7 +199,11 @@ section at the end of this file).
  * usbFunctionWrite(). Use the global usbCurrentDataToken and a static variable
  * for each control- and out-endpoint to check for duplicate packets.
  */
+#if defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny25__)
+#define USB_CFG_HAVE_MEASURE_FRAME_LENGTH   1 // Trinket/ATtiny specific
+#else
 #define USB_CFG_HAVE_MEASURE_FRAME_LENGTH   0
+#endif
 /* define this macro to 1 if you want the function usbMeasureFrameLength()
  * compiled in. This function can be used to calibrate the AVR's RC oscillator.
  */
@@ -238,8 +241,8 @@ section at the end of this file).
 #define USB_CFG_DEVICE_VERSION  0x00, 0x01
 /* Version number of the device: Minor number first, then major number.
  */
-#define USB_CFG_VENDOR_NAME     'o', 'b', 'd', 'e', 'v', '.', 'a', 't'
-#define USB_CFG_VENDOR_NAME_LEN 8
+#define USB_CFG_VENDOR_NAME     'R', 'a', 'y', 's', 'H', 'o', 'b', 'b', 'y'
+#define USB_CFG_VENDOR_NAME_LEN 9
 /* These two values define the vendor name returned by the USB device. The name
  * must be given as a list of characters under single quotes. The characters
  * are interpreted as Unicode (UTF-16) entities.
@@ -248,7 +251,7 @@ section at the end of this file).
  * obdev's free shared VID/PID pair. See the file USB-IDs-for-free.txt for
  * details.
  */
-#define USB_CFG_DEVICE_NAME     'D', 'a', 't', 'a', 'S', 't', 'o', 'r', 'e'
+#define USB_CFG_DEVICE_NAME     'H', 'I', 'D', 'S', 'e', 'r', 'i', 'a', 'l'
 #define USB_CFG_DEVICE_NAME_LEN 9
 /* Same as above for the device name. If you don't want a device name, undefine
  * the macros. See the file USB-IDs-for-free.txt before you assign a name if
@@ -263,12 +266,12 @@ section at the end of this file).
  * to fine tune control over USB descriptors such as the string descriptor
  * for the serial number.
  */
-#define USB_CFG_DEVICE_CLASS        0
+#define USB_CFG_DEVICE_CLASS        0 // 0 means "look at interface settings instead"
 #define USB_CFG_DEVICE_SUBCLASS     0
 /* See USB specification if you want to conform to an existing device class.
  * Class 0xff is "vendor specific".
  */
-#define USB_CFG_INTERFACE_CLASS     3
+#define USB_CFG_INTERFACE_CLASS     3 // 3 means HID
 #define USB_CFG_INTERFACE_SUBCLASS  0
 #define USB_CFG_INTERFACE_PROTOCOL  0
 /* See USB specification if you want to conform to an existing device class or
@@ -369,13 +372,16 @@ section at the end of this file).
  * which is not fully supported (such as IAR C) or if you use a differnt
  * interrupt than INT0, you may have to define some of these.
  */
-/* #define USB_INTR_CFG            MCUCR */
-/* #define USB_INTR_CFG_SET        ((1 << ISC00) | (1 << ISC01)) */
-/* #define USB_INTR_CFG_CLR        0 */
-/* #define USB_INTR_ENABLE         GIMSK */
-/* #define USB_INTR_ENABLE_BIT     INT0 */
-/* #define USB_INTR_PENDING        GIFR */
-/* #define USB_INTR_PENDING_BIT    INTF0 */
-/* #define USB_INTR_VECTOR         INT0_vect */
+#if defined(__AVR_ATtiny85__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny25__)
+// ATtiny Trinket Specific
+#define USB_INTR_CFG            GIMSK
+#define USB_INTR_CFG_SET        (1 << PCIE)
+#define USB_INTR_CFG_CLR        0
+#define USB_INTR_ENABLE         PCMSK
+#define USB_INTR_ENABLE_BIT     PCINT4
+#define USB_INTR_PENDING        GIFR
+#define USB_INTR_PENDING_BIT    PCIF
+#define USB_INTR_VECTOR         PCINT0_vect
+#endif
 
 #endif /* __usbconfig_h_included__ */
