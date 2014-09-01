@@ -12,7 +12,7 @@ and published under the Creative Commons Attribution-
 ShareAlike (CC-SA) 3.0 license.
 
 Frank: Original website is at http://rayshobby.net/?p=7363 and original github is at https://github.com/rayshobby/hid-serial
-Frank: I am forking this to add support for Adafruit Industries Trinket, see http://learn.adafruit.com/trinket-fake-usb-serial/another-way-from-rays-hobby
+Frank: I am forking this to add support for Adafruit Industries Trinket, see https://learn.adafruit.com/trinket-fake-usb-serial
 Frank: Some of the irrelevant folders have been removed from this fork
 Frank: usbconfig.h is completely changed to support Trinket instead
 
